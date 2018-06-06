@@ -16,7 +16,29 @@ var io = socketIO(server);    //pass in the server which we want to use with our
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  socket.on('disconnect', () => {
+  //creating an event using emit fn and passing custom data through an object
+  // socket.emit('newEmail', {
+  //   from: 'mike@example.com',
+  //   text: 'Hey. What is going on?',
+  //   createAt: 123
+  // });
+
+  socket.emit('newMessage', {
+    from: 'server@example.com',
+    text: 'Don\'t reply to this message.',
+    createdAt: 12345
+  });
+
+  //server is listening for an event here - newEmail is the data we recieve
+  // socket.on('createEmail', (newEmail) => {
+  //   console.log('createEmail', newEmail);
+  // })
+
+  socket.on('createMessage', (message) => {
+    console.log('New message created', message);
+  });
+
+  socket.on('disconnect', () => {     //server logs on disconnection
     console.log('User was disconnected');
   })
 
