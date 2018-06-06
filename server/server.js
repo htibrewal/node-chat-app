@@ -22,12 +22,7 @@ io.on('connection', (socket) => {
   //   text: 'Hey. What is going on?',
   //   createAt: 123
   // });
-
-  socket.emit('newMessage', {
-    from: 'server@example.com',
-    text: 'Don\'t reply to this message.',
-    createdAt: 12345
-  });
+  
 
   //server is listening for an event here - newEmail is the data we recieve
   // socket.on('createEmail', (newEmail) => {
@@ -36,6 +31,12 @@ io.on('connection', (socket) => {
 
   socket.on('createMessage', (message) => {
     console.log('New message created', message);
+
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
   });
 
   socket.on('disconnect', () => {     //server logs on disconnection
