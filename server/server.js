@@ -16,18 +16,17 @@ var io = socketIO(server);    //pass in the server which we want to use with our
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  //creating an event using emit fn and passing custom data through an object
-  // socket.emit('newEmail', {
-  //   from: 'mike@example.com',
-  //   text: 'Hey. What is going on?',
-  //   createAt: 123
-  // });
-  
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
+  });
 
-  //server is listening for an event here - newEmail is the data we recieve
-  // socket.on('createEmail', (newEmail) => {
-  //   console.log('createEmail', newEmail);
-  // })
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
 
   socket.on('createMessage', (message) => {
     console.log('New message created', message);
@@ -37,6 +36,13 @@ io.on('connection', (socket) => {
       text: message.text,
       createdAt: new Date().getTime()
     });
+
+    //this will be sent to all but the sender
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //     text: message.text,
+    //     createdAt: new Date().getTime()
+    // });
   });
 
   socket.on('disconnect', () => {     //server logs on disconnection
@@ -51,3 +57,27 @@ app.use(express.static(publicPath));
 server.listen(port, () => {
   console.log(`Server is up on ${port}`);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+//creating an event using emit fn and passing custom data through an object
+// socket.emit('newEmail', {
+//   from: 'mike@example.com',
+//   text: 'Hey. What is going on?',
+//   createAt: 123
+// });
+
+
+//server is listening for an event here - newEmail is the data we recieve
+// socket.on('createEmail', (newEmail) => {
+//   console.log('createEmail', newEmail);
+// });
