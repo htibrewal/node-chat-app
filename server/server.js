@@ -19,20 +19,15 @@ io.on('connection', (socket) => {
 
   socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
+  //this will be sent to all but the sender
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
   socket.on('createMessage', (message, callback) => {
     console.log('New message created', message);
 
     io.emit('newMessage', generateMessage(message.from, message.text));
-    callback('This is from the server');     //acknowledging that the request was recieved
+    callback();     //acknowledging that the request was recieved
 
-    //this will be sent to all but the sender
-    // socket.broadcast.emit('newMessage', {
-    //   from: message.from,
-    //     text: message.text,
-    //     createdAt: new Date().getTime()
-    // });
   });
 
   //prints the geolocation when server listens for it
@@ -75,4 +70,11 @@ server.listen(port, () => {
 //server is listening for an event here - newEmail is the data we recieve
 // socket.on('createEmail', (newEmail) => {
 //   console.log('createEmail', newEmail);
+// });
+
+
+// socket.broadcast.emit('newMessage', {
+//   from: message.from,
+//     text: message.text,
+//     createdAt: new Date().getTime()
 // });
