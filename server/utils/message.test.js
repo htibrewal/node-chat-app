@@ -1,7 +1,7 @@
 var expect = require('expect');
 
 //ES6 destructuring
-var {generateMessage} = require('./message.js');
+var {generateMessage, generateLocationMessage} = require('./message.js');
 
 describe('generateMessage', () => {
 
@@ -15,5 +15,16 @@ describe('generateMessage', () => {
     expect(message.createdAt).toBeA('number');
     expect(message).toInclude({from,text});
 
+  });
+});
+
+describe('generateLocationMessage', () => {
+
+  it('should generate correct location object', () => {
+    var locationMessage = generateLocationMessage('Andrew', 10, 20);
+    var url = 'https://www.google.com/maps?q=10,20';
+
+    expect(locationMessage.createdAt).toBeA('number');
+    expect(locationMessage).toInclude({from: 'Andrew', url});
   });
 });
