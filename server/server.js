@@ -4,6 +4,9 @@ const socketIO = require('socket.io');
 const express = require('express');
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 var app = express();
@@ -13,14 +16,27 @@ var server = http.createServer(app);    //we provide app since express is very n
 
 //configure the server to use socket io
 var io = socketIO(server);    //pass in the server which we want to use with our web socket
+var users = new Users();
 
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+  socket.on('join', (params, callback) => {
+    if (!isRealString(params.name) || !isRealString(params.room)) {
+      return callback('Name and room name are required');     //return makes sure none of the code below fires
+    }
 
-  //this will be sent to all but the sender
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
+    socket.join(params.room);
+    users.removeUser(socket.id);
+    users.addUser(socket.id, params.name, params.room);
+    //socket.leave
+
+    io.to(params.room).emit('updateUserList', users.getUserList(params.room) );
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+    socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`));     //this will be sent to all but the sender
+    callback();
+  });
+
 
   socket.on('createMessage', (message, callback) => {
     console.log('New message created', message);
@@ -37,6 +53,13 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {     //server logs on disconnection
     console.log('User was disconnected');
+
+    var user = users.removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room) );
+      io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
+    }
   })
 
 });    //lets us register an event listener - in this case it is connection, lets us listen for a new conn
