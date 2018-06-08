@@ -13,22 +13,41 @@ socket.on('newMessage', function(message){
   console.log('Got new message', message);
 
   var formattedTime = moment(message.createdAt).format('h:mm a');
-  var li = jQuery('<li></li>');       //this
-  li.text(`${formattedTime} ${message.from}: ${message.text}`);
 
-  jQuery('#messages').append(li);
+  var template = jQuery('#message-template').html();
+  var html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
+
+  jQuery('#messages').append(html);
+
+  // li.text(`${formattedTime} ${message.from}: ${message.text}`);
+  // var li = jQuery('<li></li>');
+  //
+  // jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function (message) {
   var formattedTime = moment(message.createdAt).format('h:mm a');
-  var li = jQuery('<li></li>');
-  var a = jQuery('<a target="_blank">My current location</a>');     //_blank - opens up a new tab instead of redirecting in the same
 
-  li.text(`${formattedTime} ${message.from}: `);
-  a.attr('href', message.url);      //if we give 1 parameter then it fetches the value but here it is set to 2nd parameter
-  li.append(a);
+  var template = jQuery('#location-message-template').html();
+  var html = Mustache.render(template, {
+    url: message.url,
+    from: message.from,
+    createdAt: formattedTime
+  });
 
-  jQuery('#messages').append(li);
+  jQuery('#messages').append(html);  
+  // var li = jQuery('<li></li>');
+  // var a = jQuery('<a target="_blank">My current location</a>');     //_blank - opens up a new tab instead of redirecting in the same
+  //
+  // li.text(`${formattedTime} ${message.from}: `);
+  // a.attr('href', message.url);      //if we give 1 parameter then it fetches the value but here it is set to 2nd parameter
+  // li.append(a);
+  //
+  // jQuery('#messages').append(li);
 });
 
 // socket.emit('createMessage', {
