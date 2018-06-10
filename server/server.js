@@ -37,6 +37,19 @@ io.on('connection', (socket) => {
     callback();
   });
 
+  socket.on('isTyping', () => {
+    var user = users.getUser(socket.id);
+
+    if (user)
+      socket.broadcast.to(user.room).emit('typing', user.name);
+  });
+
+  socket.on('isNotTyping', () => {
+    var user = users.getUser(socket.id);
+
+    if (user)
+      io.to(user.room).emit('notTyping');
+  })
 
   socket.on('createMessage', (message, callback) => {
     // console.log('New message created', message);

@@ -46,7 +46,9 @@ socket.on('updateUserList', function (users) {
 });
 
 socket.on('newMessage', function(message){
-  console.log('Got new message', message);
+  // console.log('Got new message', message);
+
+  jQuery('#Typing').text('');
 
   var formattedTime = moment(message.createdAt).format('h:mm a');
 
@@ -89,12 +91,25 @@ socket.on('newLocationMessage', function (message) {
   // jQuery('#messages').append(li);
 });
 
-// socket.emit('createMessage', {
-//   from: 'Frank',
-//   text: 'Hi'
-// }, function (data) {    //callback fn for acknowledgement
-//   console.log('Got it', data);
-// });
+socket.on('typing', function (name) {
+  jQuery('#Typing').text(`${name} is typing...`);
+});
+
+socket.on('notTyping', function () {
+  jQuery('#Typing').text('');
+})
+
+jQuery('[name=message]').on('keyup', function () {
+
+  var len = jQuery('[name=message]').val().length;
+  if (len <= 0) {
+    console.log(len);
+    socket.emit('isNotTyping');
+  }
+  else {
+    socket.emit('isTyping');
+  }
+});
 
 
 jQuery('#message-form').on('submit', function (e) {
@@ -130,29 +145,3 @@ locationButton.on('click', function() {
     alert('Unable to fetch location.');
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//custom event
-// socket.on('newEmail', function (email) {
-//   console.log('New email', email);
-// });
