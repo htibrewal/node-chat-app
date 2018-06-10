@@ -1,9 +1,22 @@
 class Users {
   constructor () {
     this.users = [];      //set to empty array
+    this.rooms = [];
   }
 
   addUser (id, name, room) {
+    var x = 0;
+    this.rooms.forEach((Room) => {
+      if (room == Room) {
+        x++;
+      }
+    });
+
+    if (x==0)
+      this.rooms.push(room);
+
+    console.log(this.rooms);
+
     var user = {id, name, room};
     this.users.push(user);
     return user;
@@ -13,10 +26,20 @@ class Users {
     var user = this.users.filter((user) => user.id === id)[0];
 
     if (user) {
+      var list = this.getUserList(user.room);
+      if(list.length == 1) {
+        this.rooms = this.rooms.filter((room) => room != user.room);
+      }
+
       this.users = this.users.filter((user) => user.id !== id);
     }
 
     return user;        //regardless whether it existed or not, we will return it
+  }
+  checkName (name) {
+    var user = this.users.filter((user) => user.name == name)[0];
+
+    return user == undefined;
   }
   getUser (id) {
     var user = this.users.filter((user) => user.id === id);

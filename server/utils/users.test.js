@@ -51,6 +51,18 @@ describe('Users', () => {
     expect(users.users.length).toBe(3);
   });
 
+  it('should contain this name', () => {
+    var res = users.checkName('Jen');
+
+    expect(res).toBe(false);
+  });
+
+  it('should not contain this name', () => {
+    var res = users.checkName('Harsh');
+
+    expect(res).toBe(true);
+  });
+
   it('should find user', () => {
     var user = users.getUser('2');
 

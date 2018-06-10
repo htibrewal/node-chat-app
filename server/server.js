@@ -19,11 +19,15 @@ var io = socketIO(server);    //pass in the server which we want to use with our
 var users = new Users();
 
 io.on('connection', (socket) => {
-  console.log('New user connected');
+  // console.log('New user connected');
 
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.room)) {
       return callback('Name and room name are required');     //return makes sure none of the code below fires
+    }
+
+    if (!users.checkName(params.name) ) {
+      return callback('Name already taken. Try different name');
     }
 
     socket.join(params.room);
@@ -80,6 +84,10 @@ io.on('connection', (socket) => {
       io.to(user.room).emit('updateUserList', users.getUserList(user.room) );
       io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
     }
+  });
+
+  socket.on('getRooms', () => {
+    socket.emit('sendRooms', users.rooms);
   })
 
 });    //lets us register an event listener - in this case it is connection, lets us listen for a new conn
