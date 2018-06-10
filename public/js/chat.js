@@ -47,9 +47,6 @@ socket.on('updateUserList', function (users) {
 
 socket.on('newMessage', function(message){
   // console.log('Got new message', message);
-
-  jQuery('#Typing').text('');
-
   var formattedTime = moment(message.createdAt).format('h:mm a');
 
   var template = jQuery('#message-template').html();
@@ -103,7 +100,7 @@ jQuery('[name=message]').on('keyup', function () {
 
   var len = jQuery('[name=message]').val().length;
   if (len <= 0) {
-    console.log(len);
+    // console.log(len);
     socket.emit('isNotTyping');
   }
   else {
